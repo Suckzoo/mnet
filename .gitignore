@@ -1,3 +1,4 @@
 *.jar
 *.pyc
 __pycache__
+*.shimple
