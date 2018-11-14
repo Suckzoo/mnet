@@ -2,11 +2,13 @@ import random
 from deap import base, creator, tools
 
 IND_SIZE = 3
+SELECTOR = "NSGA2"
 
 # Now hardcoded, but later it will be replaced with data from the outside
 variables = ['x', 'y', 'z']
 # Now hardcoded, but later it will be replaced with data from the outside
 branches = ['x + y + 2*z > 6', 'x < 10', 'y > 3', 'z < 1', 'x + y + z < 9']
+#branches = ['x + y + 2*z > 6', 'x < 10', 'y > 3']
 
 def normalize(bd):
 	return 1 - pow(1.001, -bd)
@@ -36,6 +38,15 @@ def branch_distance(individual, branch):
 	else:
 		return 0
 	
+def branch_look_ahead(individual):
+	count = len(branches)
+	for i in range(len(individual)):
+		exec("%s = %s" % (variables[i], individual[i]))
+	for i in branches:
+		if eval(i):
+			count -= 1
+	return count
+
 def fitness(individual):
 	for i in range(len(individual)):
 		exec("%s = %s" % (variables[i], individual[i]))
@@ -44,11 +55,11 @@ def fitness(individual):
 		if eval(i):
 			approach_lv -= 1
 		else:
-			return approach_lv + normalize(branch_distance(individual, i)), 
+			return approach_lv + normalize(branch_distance(individual, i)), branch_look_ahead(individual)
 	return 0, 
 
 # The problem is for minimizing the fitness function
-creator.create("FitnessMin", base.Fitness, weights=(-1.0, ))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
 # The individual is a list of values corresponding with 'variables' list
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
@@ -58,8 +69,8 @@ toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.att
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("mate", tools.cxTwoPoints)
 toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.1)
-toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("evaluate", fitness)
+toolbox.register("select", tools.selNSGA2)
 
 def main():
 	pop = toolbox.population(n=50)
