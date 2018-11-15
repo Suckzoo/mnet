@@ -10,6 +10,7 @@ IND_SIZE = len(variables)
 
 class Toolbox:
 	def __init__(self, objectives_no):
+		self.objectives_no = objectives_no
 		# The problem is for minimizing the fitness function
 		creator.create("FitnessMin", base.Fitness, weights=[-1.0]*objectives_no )
 		# The individual is a list of values corresponding with 'variables' list
@@ -24,6 +25,14 @@ class Toolbox:
 
 def normalize(bd):
 	return 1 - pow(1.001, -bd)
+
+def is_pass(ind, branch):
+	for i in range(len(ind)):
+		exec("%s = %s" % (variables[i], ind[i]))
+	if eval(branch):
+		return True
+	else:
+		return False
 
 def branch_distance(individual, branch):
 	k = 0
@@ -61,7 +70,6 @@ def run_ga(toolbox_object):
 
 	for g in range(NGEN):
 		print(g)
-		print(pop)
 		# Select the next generation individual
 		offspring = toolbox_object.toolbox.select(pop, len(pop))
 		# Clone the selected individual
@@ -82,8 +90,10 @@ def run_ga(toolbox_object):
 		for ind, fit in zip(invalid_ind, fitnesses):
 			print(fit)
 			ind.fitness.values = fit
+			if fit == [0] * toolbox_object.objectives_no:
+				return ind
 		# The population is entirely replaced by the offspring
 		pop[:] = offspring
 	
-	return pop
+	return pop[0], pop[0].fitness.values
 
