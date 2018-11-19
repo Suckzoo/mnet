@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../')
-from main import branch_distance, Toolbox, run_ga, variables, branches, normalize, is_pass
+from main import variables, branch_distance, Toolbox, run_ga, variables, branches, normalize, is_pass
 
 from deap import tools
 
@@ -32,41 +32,18 @@ def branch_weight_sum(individual):
 		approach_lv -= 1
 	return bd_wg_sum
 
-def is_float(string):
-	try:
-		float(string)
-		return True
-	except:
-		return False
+def variable_in_branch(branch):
+	variable_br = []
 
-def is_string_variable(string):
-	operators = {'>', '>=', '<', '<=', '==', '+', '-', '*', '/'}
-	for i in operators:
-		if string == i:
-			return False
-	if is_float(string):
-		return False
-	else:
-		return True
+	for elem in variables:
+		if elem in branch:
+			variable_br.append(elem)
+
+	return set(variable_br)
 
 def branch_relation(br1, br2):
-	del_space_br1 = br1.split()
-	del_space_br2 = br2.split()
-	
-	variable_br1 = []
-	variable_br2 = []
-
-	for i in del_space_br1:
-		if is_string_variable(i):
-			variable_br1.append(i)
-	
-	for i in del_space_br2:
-		if is_string_variable(i):
-			variable_br2.append(i)
-	
-	variable_br1 = set(variable_br1)
-	variable_br2 = set(variable_br2)
-
+	variable_br1 = variable_in_branch(br1)
+	variable_br2 = variable_in_branch(br2)
 
 	return 1 - (len(variable_br1 - variable_br2) / len(variable_br1))
 
@@ -101,10 +78,10 @@ def generate_fitness(individual, second_fitness):
 	return [0, 0]
 
 def fitness(individual):
-	return generate_fitness(individual, branch_look_ahead(individual))
+	#return generate_fitness(individual, branch_look_ahead(individual))
 	#return generate_fitness(individual, branch_all_sum(individual))
 	#return generate_fitness(individual, branch_weight_sum(individual))
-	#return generate_fitness(individual, branch_look_ahead(individual) + fitness_branch_relation(individual))
+	return generate_fitness(individual, branch_look_ahead(individual) + fitness_branch_relation(individual))
 
 toolbox = Toolbox(2)
 toolbox.toolbox.register("evaluate", fitness)
