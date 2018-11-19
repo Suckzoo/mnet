@@ -16,7 +16,7 @@ def fitness(individual):
 	return [0] 
 
 toolbox = Toolbox(1)
-toolbox.toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.toolbox.register("select", tools.selTournament, tournsize=2)
 toolbox.toolbox.register("evaluate", fitness)
 
 run_ga(toolbox)
