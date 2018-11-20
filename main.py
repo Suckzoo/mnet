@@ -71,29 +71,35 @@ def run_ga(toolbox_object):
 	for g in range(NGEN):
 		print(g)
 		# Select the next generation individual
-		offspring = toolbox_object.toolbox.select(pop, len(pop))
+		offspring = toolbox_object.toolbox.select(pop, len(pop)//2)
 		# Clone the selected individual
 		offspring = list(map(toolbox_object.toolbox.clone, offspring))
-		# Apply crossover and mutation on the offspring
+		# Apply crossover to each pair
+		new_offspring = []
 		for child1, child2 in zip(offspring[::2], offspring[1::2]):
-			if random.random() < CXPB:
-				toolbox_object.toolbox.mate(child1, child2)
-				del child1.fitness.values
-				del child2.fitness.values
+			toolbox_object.toolbox.mate(child1, child2)
+			new_offspring.append(child1)
+			new_offspring.append(child2)
+		# Apply mutation to each offspring
 		for mutant in offspring:
 			if random.random() < MUTPB:
 				toolbox_object.toolbox.mutate(mutant)
 				del mutant.fitness.values
-		# Evaluate the individual with an invalid fitness
-		invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-		fitnesses = map(toolbox_object.toolbox.evaluate, invalid_ind)
-		for ind, fit in zip(invalid_ind, fitnesses):
+		# Apply mutation to each new_offspring
+		for mutant in new_offspring:
+			if random.random() < MUTPB:
+				toolbox_object.toolbox.mutate(mutant)
+				del mutant.fitness.values
+		# Make individuals for the next generation
+		next_gen = offspring + new_offspring
+		fitnesses = map(toolbox_object.toolbox.evaluate, next_gen)
+		for ind, fit in zip(next_gen, fitnesses):
 			print(fit)
 			ind.fitness.values = fit
 			if fit == [0] * toolbox_object.objectives_no:
 				return ind
-		# The population is entirely replaced by the offspring
-		pop[:] = offspring
+		# The population is entirely replaced by the next_gen
+		pop[:] = next_gen
 	
 	return pop[0], pop[0].fitness.values
 
