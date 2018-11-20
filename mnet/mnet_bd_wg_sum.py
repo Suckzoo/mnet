@@ -1,4 +1,7 @@
-from mnet import generate_fitness, run_nsga, variables, branches, is_pass, branch_distance
+import sys
+sys.path.append('../')
+
+from main import generate_fitness, variables, branches, is_pass, branch_distance, run_nsga
 
 def branch_weight_sum(individual):
 	bd_wg_sum = 0
@@ -10,7 +13,7 @@ def branch_weight_sum(individual):
 	return bd_wg_sum
 
 def fitness(individual):
-	return generate_fitness(individual, branch_weight_sum(individual))
+	return generate_fitness(individual, branch_weight_sum)
 
 run_nsga(fitness)
 

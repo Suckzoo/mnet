@@ -1,4 +1,7 @@
-from mnet import generate_fitness, run_nsga, variables, branches
+import sys
+sys.path.append('../')
+
+from main import generate_fitness, variables, branches, run_nsga
 from mnet_branch_no import branch_look_ahead
 
 def variable_in_branch(branch):
@@ -34,8 +37,11 @@ def fitness_branch_relation(individual):
 		
 	return bg_relation
 
+def final_fitness(individual):
+	return branch_look_ahead(individual) + fitness_branch_relation(individual)
+
 def fitness(individual):
-	return generate_fitness(individual, branch_look_ahead(individual) + fitness_branch_relation(individual))
+	return generate_fitness(individual, final_fitness)
 
 run_nsga(fitness)
 

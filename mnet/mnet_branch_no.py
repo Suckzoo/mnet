@@ -1,4 +1,7 @@
-from mnet import generate_fitness, run_nsga, variables, branches
+import sys
+sys.path.append('../')
+
+from main import generate_fitness, variables, branches, run_nsga
 
 def branch_look_ahead(individual):
 	count = len(branches)
@@ -10,7 +13,8 @@ def branch_look_ahead(individual):
 	return count
 
 def fitness(individual):
-	return generate_fitness(individual, branch_look_ahead(individual))
+	return generate_fitness(individual, branch_look_ahead)
 
-run_nsga(fitness)
+if __name__ == "__main__":
+	run_nsga(fitness)
 
