@@ -1,5 +1,6 @@
-public class Test {
-  public static void main(String args[]) {
+public class manual {
+
+  public void TestMe() {
     int x = 30;
     int y = 10;
     int z = 15;
