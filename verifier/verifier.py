@@ -197,7 +197,9 @@ def main():
     instance.scan()
     # instance.interpret() # contains dfs of cfg
     instance.cleanup_shimple()
-
+    #TODO: parameter mapping 해주는 것과, AST노드 구조로 짜는 것. AST노드 구조로 짜는 것은 어떻게 할 것인가도 문제이다. 일단 코드 돌면서 먼저 l*이거를 모두 parameter로 매핑해주기 먼저.
+    #TODO: 그 이후에 내가 l1_*, l2_*구조로 다시 매핑해서 condition branch들을 만들어주면 된다. 그런데 이렇게 하려면 부모 노드를 알아한다. 그렇게 하려면 어떻게 해야하나 하는게 내 문제이다
+    #TODO: parent를 특정하기 위해서는 {(number, node)*}구조의 dictionary가 필요할 것 같다. 
 if __name__ == '__main__':
     try:
         if len(sys.argv) != 2:
