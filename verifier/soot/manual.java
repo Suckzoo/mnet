@@ -1,11 +1,8 @@
 public class Manual {
-  public void signater() {
+  public void signature() {
     
   }
   public void testMe(int x, int y, int z) {
-    if(0>1){
-      signater();
-    }
     if(x == 30) {
       if(y == 10) {
         if(z == 15) {
@@ -27,6 +24,7 @@ public class Manual {
         else if(y > 0){
           if(z > 30){
             System.out.print("3");;
+            signature();
           }
           else if(z < 30){
             System.out.print("4");;

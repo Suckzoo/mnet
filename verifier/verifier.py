@@ -2,7 +2,6 @@ import sys, os
 import shutil
 import re
 import operator
-
 class InvalidException(Exception):
     def __init__(self, msg):
         self.msg = msg
@@ -24,6 +23,7 @@ class Pattern:
     ptn_goto = re.compile('^goto .*')
     ptn_expression = re.compile('[\$A-Za-z_][\$A-Za-z0-9_]+ = .*')
     ptn_param = re.compile('@parameter[0-9]+: int;')
+    ptn_signature = re.compile('.*invoke.*signature')
 
 class ShimpleInstance(object):
 
@@ -132,6 +132,7 @@ class ShimpleInstance(object):
     def get_labels(self):
         test_me = 0
         for number, line in enumerate(self.code):
+            number = number+1
             if not test_me:
                 if Pattern.ptn_testme.search(line):
                     test_me = 1
@@ -142,7 +143,27 @@ class ShimpleInstance(object):
                     self.labels[line[:-1]] = number
                 elif Pattern.ptn_goto.search(line) or Pattern.ptn_branch.search(line):
                     self.gotos_and_branches.append(number)
+                elif Pattern.ptn_signature.search(line):
+                    self.signature = number
+                    print("signature: ",self.signature)
         print(self.gotos_and_branches)
+
+    def find_all_jump(self):
+        test_me = 0
+        for number, line in enumerate(self.code):
+            number = number+1
+            if not test_me:
+                if Pattern.ptn_testme.search(line):
+                    test_me = 1
+            else:
+                if line == '}':
+                    break
+                elif Pattern.ptn_goto.search(line) or Pattern.ptn_branch.search(line):
+                    self.gotos_and_branches.append(number)
+            if Pattern.ptn_signature.search(line):
+                print("signature number: ", number)
+                self.signature = number
+
     def find_next_line_number(self, number):
         for n in self.gotos_and_branches:
             if n > number:
@@ -153,6 +174,7 @@ class ShimpleInstance(object):
         test_me = 0
         print("construct start")
         for number, line in enumerate(self.code):
+            number = number+1
             if not test_me:
                 if Pattern.ptn_testme.search(line):
                     test_me = 1
@@ -170,14 +192,14 @@ class ShimpleInstance(object):
                     break
                 elif Pattern.ptn_branch.search(line):
                     condition = line.split('if')[1].split('goto')[0].strip()
-                    l_number = self.labels[line.split('goto')[1][:-1].strip()]
-                    current_node.push_edge(condition, l_number + 1)
+                    l_number = self.find_next_line_number(self.labels[line.split('goto')[1][:-1].strip()])
+                    current_node.push_edge(condition, l_number)
                     next_line_number = self.find_next_line_number(number)
                     current_node.push_edge(condition, next_line_number, True)
                     self.flow_graph[number] = current_node
                 elif Pattern.ptn_goto.search(line):
-                    l_number = self.labels[line[5:-1]]
-                    current_node.push_edge(None, l_number + 1)
+                    l_number = self.find_next_line_number(self.labels[line[5:-1]])
+                    current_node.push_edge('goto', l_number)
                     self.flow_graph[number] = current_node
 
     def scan(self):
@@ -191,12 +213,45 @@ class ShimpleInstance(object):
 
         shimple_file.close()
 
+    def find_entry_point(self):
+        for i in range(self.signature-1, -1, -1):
+            if Pattern.ptn_branch.search(self.code[i]) or Pattern.ptn_goto.search(self.code[i]):
+                return i+1
+    
+
+    def find_path(self, number, path):
+        for k, v in self.flow_graph.items():
+            for edge in v.edge:
+                if edge[1] == number:
+                    path.append(edge)
+                    return self.find_path(k, path)
+        path.reverse()
+        return path
+
+def negation(path):
+    negation_map = {'=':'!=', '!=':'=', '>':'<=', '<':'>=', '>=':'<', '<=':'>'}
+    real_path = []
+    for condition in path:
+        if not condition[2]:
+            real_path.append(condition[0])
+        else:
+            condition_split = condition[0].split()
+            condition_split[1] = negation_map[condition_split[1]]
+            real_path.append(' '.join(condition_split))
+    
+    return real_path
 
 def main():
     instance = ShimpleInstance(sys.argv[1])
     instance.scan()
     # instance.interpret() # contains dfs of cfg
     instance.cleanup_shimple()
+    entry_point = instance.find_entry_point()
+    print("entry_point: ", entry_point)
+    print("edge: ", instance.flow_graph[entry_point].edge[0])
+    path = instance.find_path(entry_point, [instance.flow_graph[entry_point].edge[1]])
+    print(path)
+    print(negation(path))
     #TODO: parameter mapping 해주는 것과, AST노드 구조로 짜는 것. AST노드 구조로 짜는 것은 어떻게 할 것인가도 문제이다. 일단 코드 돌면서 먼저 l*이거를 모두 parameter로 매핑해주기 먼저.
     #TODO: 그 이후에 내가 l1_*, l2_*구조로 다시 매핑해서 condition branch들을 만들어주면 된다. 그런데 이렇게 하려면 부모 노드를 알아한다. 그렇게 하려면 어떻게 해야하나 하는게 내 문제이다
     #TODO: parent를 특정하기 위해서는 {(number, node)*}구조의 dictionary가 필요할 것 같다. 
