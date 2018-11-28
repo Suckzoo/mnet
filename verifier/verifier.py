@@ -1,7 +1,7 @@
 import sys, os
 import shutil
 import re
-from z3 import *
+import operator
 
 class InvalidException(Exception):
     def __init__(self, msg):
@@ -33,9 +33,11 @@ class ShimpleInstance(object):
         self.variables = {}
         self.params = []
         self.labels = {}
+        self.gotos_and_branches = []
         self.flow_graph = {}
         self.validity = True
         self.root = None
+        self.sorted_labes = []
 
     def generate_shimple(self):
         if self.path.find('.java') == -1:
@@ -125,7 +127,6 @@ class ShimpleInstance(object):
                     self.solver.pop()
                 else:
                     __dfs__(self.flow_graph[edge[1]], next_phi)
-
         __dfs__(self.root)
 
     def get_labels(self):
@@ -139,9 +140,18 @@ class ShimpleInstance(object):
                     break
                 elif Pattern.ptn_label.search(line):
                     self.labels[line[:-1]] = number
+                elif Pattern.ptn_goto.search(line) or Pattern.ptn_branch.search(line):
+                    self.gotos_and_branches.append(number)
+        print(self.gotos_and_branches)
+    def find_next_line_number(self, number):
+        for n in self.gotos_and_branches:
+            if n > number:
+                return n
+
 
     def construct_graph(self):
         test_me = 0
+        print("construct start")
         for number, line in enumerate(self.code):
             if not test_me:
                 if Pattern.ptn_testme.search(line):
@@ -152,7 +162,6 @@ class ShimpleInstance(object):
                     current_node = self.root
                 else:
                     current_node = Node(number)
-                self.flow_graph[number] = current_node
                 match_phi = re.match(r'\([0-9]+\)', line)
                 if match_phi:
                     raw_phi = match_phi.group(0)
@@ -163,12 +172,13 @@ class ShimpleInstance(object):
                     condition = line.split('if')[1].split('goto')[0].strip()
                     l_number = self.labels[line.split('goto')[1][:-1].strip()]
                     current_node.push_edge(condition, l_number + 1)
-                    current_node.push_edge(condition, number + 1, True)
+                    next_line_number = self.find_next_line_number(number)
+                    current_node.push_edge(condition, next_line_number, True)
+                    self.flow_graph[number] = current_node
                 elif Pattern.ptn_goto.search(line):
                     l_number = self.labels[line[5:-1]]
                     current_node.push_edge(None, l_number + 1)
-                else:
-                    current_node.push_edge(None, number + 1)
+                    self.flow_graph[number] = current_node
 
     def scan(self):
         shimple_file = open(self.file_name + '.shimple')
@@ -176,6 +186,9 @@ class ShimpleInstance(object):
         self.code = [x.strip() for x in lines]
         self.get_labels()
         self.construct_graph()
+        for k, v in self.flow_graph.items():
+            print("line_number: ",k," ", "edge: ", v.edge)
+
         shimple_file.close()
 
 
@@ -194,6 +207,4 @@ if __name__ == '__main__':
     except InvalidException as e:
         print('INVALID')
         print(e.msg)
-    except:
-        print('Usage: python verifier.py <file_name>.java')
 
