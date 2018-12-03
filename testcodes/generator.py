@@ -12,7 +12,7 @@ x9 = random.random()*100
 x10 = random.random()*100
 x11 = random.random()*100
 x12 = random.random()*100
-for i in range(5):
+for i in range(20):
   a1 = randint(1, 100)
   a2 = randint(1, 100)
   a3 = randint(1, 100)
