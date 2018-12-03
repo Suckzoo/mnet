@@ -266,6 +266,10 @@ def main():
     entry_point = instance.find_entry_point()
     path = instance.find_path(entry_point, [instance.flow_graph[entry_point].edge[1]])
     instance.set_path(instance.negation_and_mapping(path))
+    for idx, p in enumerate(instance.path):
+        p = p.replace('cmpl', '-')
+        p = p.replace('cmpg', '-')
+        instance.path[idx] = p.replace('(double)', '')
     print(instance.path)
 
     ############ 현우는 여기 아래서  부터 instance가지고 노시면 됩니다 #############
