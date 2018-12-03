@@ -3,8 +3,10 @@ from deap import base, creator, tools
 
 # Now hardcoded, but later it will be replaced with data from the outside
 variables = ['x', 'y', 'z']
+#variables = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9']
 # Now hardcoded, but later it will be replaced with data from the outside
 branches = ['x + y + 2*z > 6', 'x < 10', 'y > 3', 'z < 1', 'x + y + z < 9']
+#branches = ['l1 +  2 * l2 > 0', '2 * l1 +  3 * l2 - l3 > 0', 'l1 + l2 - l3 > 0', 'l1 > 0', 'l4 * l5 - l6 > 0', '2 * l5 +  3 * l6 > l4', 'l4 + l5 > l6', 'l5 > l6', 'l7 - l8 + l9 > 0', 'l7 > l8', '3 * l8 +  2 * l9 - l7 > 0']
 
 IND_SIZE = len(variables)
 
@@ -97,6 +99,7 @@ def run(toolbox):
 			print(fit)
 			ind.fitness.values = fit
 			if fit[0] == 0:
+				print(ind)
 				return ind
 		# The population is entirely replaced by the next_gen
 		pop[:] = next_gen
@@ -111,7 +114,7 @@ def toolbox_initialize(objectives_no):
 	toolbox.register("attribute", random.random)
 	toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attribute, n=IND_SIZE)
 	toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-	toolbox.register("mate", tools.cxTwoPoints)
+	toolbox.register("mate", tools.cxTwoPoint)
 	toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.1)
 	return toolbox
 

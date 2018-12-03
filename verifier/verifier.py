@@ -2,6 +2,7 @@ import sys, os
 import shutil
 import re
 import operator
+
 class InvalidException(Exception):
 	def __init__(self, msg):
 		self.msg = msg
@@ -30,6 +31,7 @@ class ShimpleInstance(object):
     def __init__(self, path):
         self.path = path
         self.generate_shimple()
+        self.variable_names = []
         self.variables = {}
         self.params = []
         self.labels = {}
@@ -63,8 +65,10 @@ class ShimpleInstance(object):
         self.params.append(x)
     
     def declare_variable(self, name, expr):
-        for i in self.variables:
-            expr = expr.replace(i, self.variables[i])
+        for i in range(len(self.variable_names)):
+            rep_name = self.variable_names[len(self.variable_names) - i - 1]
+            expr = expr.replace(rep_name, self.variables[rep_name])
+        self.variable_names.append(name)
         self.variables[name] = expr
 
     def declare_token(self, x):
@@ -266,9 +270,12 @@ def main():
     entry_point = instance.find_entry_point()
     path = instance.find_path(entry_point, [instance.flow_graph[entry_point].edge[1]])
     instance.set_path(instance.negation_and_mapping(path))
+    fd = open('../testcodes/soot/' + str(instance.file_name) + '.txt', 'w')
     print(instance.path)
-
-    ############ 현우는 여기 아래서  부터 instance가지고 노시면 됩니다 #############
+    print(instance.params)
+    fd.write(",".join(instance.params) + "\n")
+    fd.write(",".join(instance.path))
+    fd.close()
 
 if __name__ == '__main__':
     try:
