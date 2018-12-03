@@ -270,12 +270,16 @@ def main():
     entry_point = instance.find_entry_point()
     path = instance.find_path(entry_point, [instance.flow_graph[entry_point].edge[1]])
     instance.set_path(instance.negation_and_mapping(path))
-    fd = open('../testcodes/soot/' + str(instance.file_name) + '.txt', 'w')
-    print(instance.path)
-    print(instance.params)
-    fd.write(",".join(instance.params) + "\n")
-    fd.write(",".join(instance.path))
-    fd.close()
+    #fd = open('../testcodes/soot/' + str(instance.file_name) + '.txt', 'w')
+    for idx, p in enumerate(instance.path):
+        p = p.replace('cmpl', '-')
+        p = p.replace('cmpg', '-')
+        instance.path[idx] = p.replace('(double)', '')
+    #print(instance.path)
+    #print(instance.params)
+    #fd.write(",".join(instance.params) + "\n")
+    #fd.write(",".join(instance.path))
+    #fd.close()
 
 if __name__ == '__main__':
     try:
