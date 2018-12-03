@@ -2,12 +2,12 @@ public class manual_3_5 {
     public static void signature() {
 
     }   
-    public void testMe(int x, int y, int z) {
-		if (x + 2 * y + 3 * z > 420) {
-			if (5 * x + 7 * y + 11 * z < 1630) {
-				if (3 * x + 5 * y + 2 * z > 690) {
-					if (11 * x  + 3 * y + 5 * z < 990) {
-						if (7 * x + 13 * y + 17 * z > 2680) {
+    public void testMe(int x1, int x2, int x3) {
+		if (x1 * 3 + x2 * 84 + x3 * 64 > 9270) {
+			if (x1 * 23 + x2 * 61 + x3 * 63 < 9700) {
+				if (x1 * 16 + x2 * 46 + x3 * 41 > 6740) {
+					if (x1 * 18 + x2 * 100 + x3 * 65 < 11700) {
+						if (x1 * 60 + x2 * 83 + x3 * 92 < 16190) {
 							signature();
 						}
 					}
@@ -17,6 +17,6 @@ public class manual_3_5 {
 	}
 }
 
-//28.947138732524348
-//90.82839668505531
-//76.6083654208627
+//x1 = 90.59748109334677
+//x2 = 58.75581306632432
+//x3 = 63.72835946619995
