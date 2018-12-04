@@ -64,8 +64,8 @@ def generate_fitness(individual, *fitness_func):
 	return [0] * (count + 1)
 
 def run(toolbox):
-	pop = toolbox.population(n=300)
-	CXPB, MUTPB, NGEN = 0.5, 0.2, 1000
+	pop = toolbox.population(n=500)
+	CXPB, MUTPB, NGEN = 0.5, 0.2, 3000
 	# Evaluate the entire population
 	fitnesses = map(toolbox.evaluate, pop)
 	for ind, fit in zip(pop, fitnesses):
