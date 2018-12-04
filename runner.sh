@@ -25,7 +25,7 @@ do
   echo "\n\nRunning $actual_runner..."
   for numvar in 9 12
   do
-    for deepness in 5 20
+    for deepness in 5 10 15 20
     do
       get_testfile $numvar $deepness
       runner_directory=$(echo $runner | cut -d'.' -f 1)
