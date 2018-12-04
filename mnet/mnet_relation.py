@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../')
+sys.path.append('.')
 
 from main import generate_fitness, variables, branches, run_nsga
 from mnet_branch_no import branch_look_ahead

@@ -1,4 +1,5 @@
 import random
+import sys
 from deap import base, creator, tools
 
 # Now hardcoded, but later it will be replaced with data from the outside
@@ -63,8 +64,8 @@ def generate_fitness(individual, *fitness_func):
 	return [0] * (count + 1)
 
 def run(toolbox):
-	pop = toolbox.population(n=200)
-	CXPB, MUTPB, NGEN = 0.5, 0.2, 50
+	pop = toolbox.population(n=300)
+	CXPB, MUTPB, NGEN = 0.5, 0.2, 1000
 	# Evaluate the entire population
 	fitnesses = map(toolbox.evaluate, pop)
 	for ind, fit in zip(pop, fitnesses):
@@ -99,12 +100,18 @@ def run(toolbox):
 			print(fit)
 			ind.fitness.values = fit
 			if fit[0] == 0:
-				print(ind)
-				return ind
+				print('individual : ' + str(ind))
+				print('fitness : ' + str(ind.fitness.values))
+				print('generation : ' + str(g))
+				return ind, ind.fitness.values, g
 		# The population is entirely replaced by the next_gen
 		pop[:] = next_gen
 	
-	return pop[0], pop[0].fitness.values
+	print('individual : ' + str(ind))
+	print('fitness : ' + str(ind.fitness.values))
+	print('generation : ' + str(g))
+			
+	return pop[0], pop[0].fitness.values, g
 
 def toolbox_initialize(objectives_no):
 	creator.create("FitnessMin", base.Fitness, weights=[-1.0]*objectives_no)
@@ -122,11 +129,17 @@ def run_ga(fitness):
 	toolbox = toolbox_initialize(1)
 	toolbox.register("evaluate", fitness)
 	toolbox.register("select", tools.selTournament, tournsize=3)
-	run(toolbox)
+	return run(toolbox)
 	
 def run_nsga(fitness):
 	toolbox = toolbox_initialize(2)
 	toolbox.register("evaluate", fitness)
 	toolbox.register("select", tools.selNSGA2)
-	run(toolbox)
+	return run(toolbox)
+
+fd = open(sys.argv[1])
+variables = fd.readline().strip().split(',')
+branches = fd.readline().split(',')
+IND_SIZE = len(variables)
+
 

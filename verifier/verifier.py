@@ -275,11 +275,12 @@ def main():
         p = p.replace('cmpl', '-')
         p = p.replace('cmpg', '-')
         instance.path[idx] = p.replace('(double)', '')
-    #print(instance.path)
-    #print(instance.params)
-    #fd.write(",".join(instance.params) + "\n")
-    #fd.write(",".join(instance.path))
-    #fd.close()
+    print(instance.path)
+    print(instance.params)
+    fd = open('../testcodes/results/' + str(instance.file_name) + '.txt', 'w')
+    fd.write(",".join(instance.params) + "\n")
+    fd.write(",".join(instance.path))
+    fd.close()
 
 if __name__ == '__main__':
     try:
