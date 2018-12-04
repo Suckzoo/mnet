@@ -113,12 +113,15 @@ def run(toolbox):
 			
 	return pop[0], pop[0].fitness.values, g
 
+def hundreds():
+	return random.random() * 100
+
 def toolbox_initialize(objectives_no):
 	creator.create("FitnessMin", base.Fitness, weights=[-1.0]*objectives_no)
 	creator.create("Individual", list, fitness=creator.FitnessMin)
 
 	toolbox = base.Toolbox()
-	toolbox.register("attribute", random.random)
+	toolbox.register("attribute", hundreds)
 	toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attribute, n=IND_SIZE)
 	toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 	toolbox.register("mate", tools.cxTwoPoint)
