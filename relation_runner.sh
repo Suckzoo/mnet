@@ -19,7 +19,7 @@ get_testfile()
   testfile="manual_6_10_$1.txt"
 }
 
-for trial in 1 .. 20
+for trial in $(seq 20)
 do
   echo "\n\nTrial $trial..."
   for runner in traditional.py $(ls mnet/)
