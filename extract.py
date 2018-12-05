@@ -12,7 +12,7 @@ def get_row(trial, runner):
         with open(out_file, 'r') as f:
             f.seek(filesize - 200)
             result = f.read()
-            gen = result.split('generation : ')[1]
+            gen = result.split('generation : ')[1].strip()
             gens.append(gen)
     return ', '.join(gens)
 
