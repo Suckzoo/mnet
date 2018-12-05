@@ -10,4 +10,5 @@ venv
 .DS_Store
 .metadata
 *.class
-log/
+log*/
+trial*/
