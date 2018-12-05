@@ -20,8 +20,7 @@ def main():
     global runners
     with open('report.out', 'w') as fw:
         for runner in runners:
-            for trial in range(1, 2):
-            # for trial in range(1,21):
+            for trial in range(1,21):
                 fw.write(f'{runner}\n')
                 fw.write(get_row(trial, runner))
                 fw.write('\n')
