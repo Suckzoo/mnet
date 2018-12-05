@@ -11,4 +11,5 @@ venv
 .metadata
 *.class
 log*/
-trial*/
+*trial*/
+*.out
