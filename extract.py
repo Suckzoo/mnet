@@ -30,7 +30,7 @@ def main():
                 fw.write(get_row(trial, runner))
                 fw.write('\n')
             ave_gen = [gen / 20 for gen in sum_gen]
-            fw.write(f'average for {runner}: {ave_gen}')
+            fw.write(f'average for {runner}: {ave_gen}\n')
 
 if __name__ == '__main__':
     main()
